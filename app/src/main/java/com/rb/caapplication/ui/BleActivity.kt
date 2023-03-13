@@ -23,12 +23,19 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
 
     override val viewModel by viewModels<BleViewModel>()
 
+    private val scanAdapter: ScanAdapter by lazy {
+        ScanAdapter { scanResult ->
+            Log.d("sband", "ScanAdapter 아이템 클릭 bleDevice: ${scanResult.bleDevice.macAddress}")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun initVariable() {
-
+        binding.viewmodel = viewModel
+        binding.adapter = scanAdapter
     }
 
     override fun initPermission() {

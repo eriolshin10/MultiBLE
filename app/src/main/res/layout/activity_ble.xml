@@ -5,7 +5,7 @@
     <data>
 
         <variable
-            name="vizewmodel"
+            name="viewmodel"
             type="com.rb.caapplication.viewmodel.BleViewModel" />
 
         <variable
@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:text="스캔 시작"
                 android:textSize="40sp"
-
+                android:onClick="@{()-> viewmodel.startScan()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="스캔 중지"
                 android:textSize="40sp"
-
+                android:onClick="@{()-> viewmodel.stopScan()}"
                 app:layout_constraintTop_toTopOf="@id/start_scan"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -71,8 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="vertical"
-
-
+                adapter="@{adapter}"
+                scanList="@{viewmodel.scanResults}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/title_scan_devices"
                 app:layout_constraintBottom_toBottomOf="parent"/>

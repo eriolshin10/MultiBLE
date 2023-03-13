@@ -17,7 +17,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 @HiltViewModel
 class BleViewModel @Inject constructor(
@@ -56,6 +58,8 @@ class BleViewModel @Inject constructor(
                         Log.d("sband", "BleViewModel BleScanException Unknown error")
                     }
                 })
+
+        Timer("scan",false).schedule(5000L) { stopScan() }
     }
 
     fun stopScan() {

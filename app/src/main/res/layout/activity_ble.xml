@@ -8,6 +8,10 @@
             name="vizewmodel"
             type="com.rb.caapplication.viewmodel.BleViewModel" />
 
+        <variable
+            name="adapter"
+            type="com.rb.caapplication.ui.ScanAdapter" />
+
     </data>
 
     <ScrollView

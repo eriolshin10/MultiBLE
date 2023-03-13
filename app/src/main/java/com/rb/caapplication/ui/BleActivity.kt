@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.rb.caapplication.R
 import com.rb.caapplication.base.BaseActivity
 import com.rb.caapplication.databinding.ActivityBleBinding
+import com.rb.caapplication.utils.Utils.Companion.repeatOnStarted
 import com.rb.caapplication.viewmodel.BleViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -22,22 +23,8 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
 
     override val viewModel by viewModels<BleViewModel>()
 
-    companion object {
-        fun LifecycleOwner.repeatOnStarted(block: suspend CoroutineScope.() -> Unit) {
-            lifecycleScope.launch {
-                lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        repeatOnStarted {
-            viewModel.deviceConnectionEvent.collect {
-                Log.d("sband", "deviceConnectionEvent, deviceName : ${it.deviceName}")
-            }
-        }
     }
 
     override fun initVariable() {
@@ -49,7 +36,11 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
     }
 
     override fun initObserver() {
-
+        repeatOnStarted {
+            viewModel.deviceConnectionEvent.collect {
+                Log.d("sband", "deviceConnectionEvent, deviceName: ${it.deviceName}")
+            }
+        }
     }
 
     override fun onResume() {

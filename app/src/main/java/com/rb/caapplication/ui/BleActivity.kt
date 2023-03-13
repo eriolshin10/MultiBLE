@@ -24,6 +24,7 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
     private val scanAdapter: ScanAdapter by lazy {
         ScanAdapter { scanResult ->
             Log.d("sband", "ScanAdapter 아이템 클릭 bleDevice: ${scanResult.bleDevice.macAddress}")
+            viewModel.connectBleDevice(scanResult.bleDevice)
         }
     }
 
@@ -67,14 +68,14 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
     override fun initObserver() {
         repeatOnStarted {
             viewModel.deviceConnectionEvent.collect {
-                Log.d("sband", "deviceConnectionEvent, deviceName: ${it.deviceName}")
+                Log.d("sband", "BleActivity deviceConnectionEvent, deviceName: ${it.deviceName}\t${it.data}")
             }
         }
+
     }
 
     override fun onResume() {
         super.onResume()
-
         viewModel.testScan()
     }
 

@@ -2,12 +2,14 @@ package com.rb.caapplication.viewmodel
 
 import android.util.Log
 import androidx.databinding.ObservableArrayMap
+import com.polidea.rxandroidble2.RxBleDevice
 import com.polidea.rxandroidble2.exceptions.BleScanException
 import com.polidea.rxandroidble2.scan.ScanFilter
 import com.polidea.rxandroidble2.scan.ScanResult
 import com.polidea.rxandroidble2.scan.ScanSettings
 import com.rb.caapplication.base.BaseViewModel
 import com.rb.domain.ble.DeviceEvent
+import com.rb.domain.usecase.ConnectBleDeviceUseCase
 import com.rb.domain.usecase.DeviceConnectionEventUseCase
 import com.rb.domain.usecase.ScanBleDevicesUseCase
 import com.rb.domain.usecase.TestScanBleDevicesUseCase
@@ -24,6 +26,7 @@ import kotlin.concurrent.schedule
 @HiltViewModel
 class BleViewModel @Inject constructor(
     private val scanBleDevicesUseCase: ScanBleDevicesUseCase,
+    private val connectBleDeviceUseCase: ConnectBleDeviceUseCase,
     private val testScanBleDevicesUseCase: TestScanBleDevicesUseCase,
     deviceConnectionEventUseCase: DeviceConnectionEventUseCase
 ) : BaseViewModel() {
@@ -65,6 +68,8 @@ class BleViewModel @Inject constructor(
     fun stopScan() {
         scanSubscription?.dispose()
     }
+
+    fun connectBleDevice(device: RxBleDevice) = connectBleDeviceUseCase.execute(device)
 
     private fun addScanResult(result: ScanResult) {
         val device = result.bleDevice

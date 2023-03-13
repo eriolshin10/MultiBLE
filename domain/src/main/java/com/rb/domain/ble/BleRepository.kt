@@ -12,5 +12,6 @@ interface BleRepository {
     var deviceConnectionEvent: MutableSharedFlow<DeviceEvent<Boolean>>
 
     fun scanBleDevice(settings: ScanSettings, scanFilter: ScanFilter): Observable<ScanResult>
+    fun connectBleDevice(device: RxBleDevice)
     fun testScanBleDevice()
 }

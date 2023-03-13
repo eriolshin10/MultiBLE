@@ -1,6 +1,7 @@
 package com.rb.caapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.rb.caapplication.base.BaseViewModel
 import com.rb.domain.ble.DeviceEvent
 import com.rb.domain.usecase.DeviceConnectionEventUseCase
 import com.rb.domain.usecase.ScanBleDevicesUseCase
@@ -15,7 +16,7 @@ class BleViewModel @Inject constructor(
     private val scanBleDevicesUseCase: ScanBleDevicesUseCase,
     private val testScanBleDevicesUseCase: TestScanBleDevicesUseCase,
     deviceConnectionEventUseCase: DeviceConnectionEventUseCase
-) : ViewModel() {
+) : BaseViewModel() {
 
     val deviceConnectionEvent: SharedFlow<DeviceEvent<Boolean>> =
         deviceConnectionEventUseCase.execute().asSharedFlow()

@@ -28,6 +28,13 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
         }
     }
 
+    private val connectedDeviceAdapter: ConnectedDeviceAdapter by lazy {
+        ConnectedDeviceAdapter {
+            Log.d("sband", "ConnectedDeviceAdapter 아이템 클릭 address: $it")
+
+        }
+    }
+
     companion object {
         val PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -50,7 +57,8 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
 
     override fun initVariable() {
         binding.viewmodel = viewModel
-        binding.adapter = scanAdapter
+        binding.scanAdapter = scanAdapter
+        binding.connectedDeviceAdapter = connectedDeviceAdapter
     }
 
     override fun initPermission() {
@@ -68,10 +76,10 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
     override fun initObserver() {
         repeatOnStarted {
             viewModel.deviceConnectionEvent.collect {
-                Log.d("sband", "BleActivity deviceConnectionEvent, deviceName: ${it.deviceName}\t${it.data}")
+                Log.d("sband", "BleActivity DeviceConnectionEvent collect, address: ${it.address}\t${it.data}")
+                viewModel.updateConnectedDeviceMap(it.address, it.data)
             }
         }
-
     }
 
     override fun onResume() {

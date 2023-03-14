@@ -9,8 +9,12 @@
             type="com.rb.caapplication.viewmodel.BleViewModel" />
 
         <variable
-            name="adapter"
+            name="scanAdapter"
             type="com.rb.caapplication.ui.ScanAdapter" />
+
+        <variable
+            name="connectedDeviceAdapter"
+            type="com.rb.caapplication.ui.ConnectedDeviceAdapter" />
 
     </data>
 
@@ -51,6 +55,10 @@
             android:id="@+id/rv_connected_devices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            adapter="@{connectedDeviceAdapter}"
+            connectedDeviceList="@{viewmodel.connectedDeviceList}"
             app:layout_constraintTop_toBottomOf="@id/title_connected_devices" />
 
         <TextView
@@ -65,7 +73,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_scan_devices"
-            adapter="@{adapter}"
+            adapter="@{scanAdapter}"
             scanList="@{viewmodel.scanResults}"
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -1,6 +1,7 @@
 package com.rb.caapplication.viewmodel
 
 import android.util.Log
+import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableArrayMap
 import com.polidea.rxandroidble2.RxBleDevice
 import com.polidea.rxandroidble2.exceptions.BleScanException
@@ -37,7 +38,7 @@ class BleViewModel @Inject constructor(
     private var scanSubscription: Disposable? = null
 
     var scanResults = ObservableArrayMap<String, ScanResult>()
-
+    var connectedDeviceList = ObservableArrayList<String>()
 
     fun testScan() = testScanBleDevicesUseCase.execute()
 
@@ -76,5 +77,11 @@ class BleViewModel @Inject constructor(
         val deviceAddress = device.macAddress
         scanResults[deviceAddress] = result
     }
+
+    fun updateConnectedDeviceMap(address: String, flag: Boolean) {
+        if (flag) connectedDeviceList.add(address)
+        else connectedDeviceList.remove(address)
+    }
+
 
 }

@@ -31,7 +31,8 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
     private val connectedDeviceAdapter: ConnectedDeviceAdapter by lazy {
         ConnectedDeviceAdapter {
             Log.d("sband", "ConnectedDeviceAdapter 아이템 클릭 address: $it")
-
+            val data = "E005000104"
+            viewModel.writeData(it, data)
         }
     }
 

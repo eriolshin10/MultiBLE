@@ -1,6 +1,5 @@
 package com.rb.caapplication.ui
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -37,7 +36,6 @@ class ConnectedDeviceAdapter(
     }
 
     override fun onBindViewHolder(holder: ConnectedDeviceViewHolder, position: Int) {
-        Log.d("sband", "ConnectedDeviceAdapter onBindViewHolder() address: ${getItem(position)}")
         holder.bind(getItem(position))
     }
 

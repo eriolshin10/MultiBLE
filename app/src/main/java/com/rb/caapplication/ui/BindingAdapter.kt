@@ -1,6 +1,5 @@
 package com.rb.caapplication.ui
 
-import android.util.Log
 import androidx.databinding.BindingAdapter
 import androidx.databinding.ObservableArrayMap
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,6 @@ object BindingAdapter {
     @JvmStatic
     @BindingAdapter("connectedDeviceList")
     fun RecyclerView.bindConnectedDeviceList(deviceList: MutableList<String>) {
-        Log.d("sband", "BindingAdapter bindConnectedDeviceList() deviceList: $deviceList")
         val adapter = this.adapter
         if (adapter is ConnectedDeviceAdapter) {
             adapter.submitList(deviceList.toList())

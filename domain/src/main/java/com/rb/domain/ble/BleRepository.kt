@@ -5,6 +5,7 @@ import com.polidea.rxandroidble2.scan.ScanFilter
 import com.polidea.rxandroidble2.scan.ScanResult
 import com.polidea.rxandroidble2.scan.ScanSettings
 import io.reactivex.Observable
+import io.reactivex.Single
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface BleRepository {
@@ -13,5 +14,6 @@ interface BleRepository {
 
     fun scanBleDevice(settings: ScanSettings, scanFilter: ScanFilter): Observable<ScanResult>
     fun connectBleDevice(device: RxBleDevice)
+    fun writeData(address: String, sendByteData: ByteArray): Single<ByteArray>?
     fun testScanBleDevice()
 }

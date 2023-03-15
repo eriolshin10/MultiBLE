@@ -15,5 +15,6 @@ interface BleRepository {
     fun scanBleDevice(settings: ScanSettings, scanFilter: ScanFilter): Observable<ScanResult>
     fun connectBleDevice(device: RxBleDevice)
     fun writeData(address: String, sendByteData: ByteArray): Single<ByteArray>?
+    fun disconnectBleDevice(address: String)
     fun testScanBleDevice()
 }

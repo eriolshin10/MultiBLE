@@ -14,6 +14,7 @@ import com.rb.caapplication.utils.Utils
 import com.rb.domain.ble.DeviceEvent
 import com.rb.domain.usecase.ConnectBleDeviceUseCase
 import com.rb.domain.usecase.DeviceConnectionEventUseCase
+import com.rb.domain.usecase.DisconnectBleDeviceUseCase
 import com.rb.domain.usecase.ScanBleDevicesUseCase
 import com.rb.domain.usecase.TestScanBleDevicesUseCase
 import com.rb.domain.usecase.WriteByteDataUseCase
@@ -37,6 +38,7 @@ class BleViewModel @Inject constructor(
     private val scanBleDevicesUseCase: ScanBleDevicesUseCase,
     private val connectBleDeviceUseCase: ConnectBleDeviceUseCase,
     private val writeByteDataUseCase: WriteByteDataUseCase,
+    private val disconnectBleDeviceUseCase: DisconnectBleDeviceUseCase,
     private val testScanBleDevicesUseCase: TestScanBleDevicesUseCase,
     deviceConnectionEventUseCase: DeviceConnectionEventUseCase
 ) : BaseViewModel() {
@@ -83,6 +85,7 @@ class BleViewModel @Inject constructor(
     }
 
     fun connectBleDevice(device: RxBleDevice) = connectBleDeviceUseCase.execute(device)
+    fun disconnectBleDevice(address: String) = disconnectBleDeviceUseCase.execute(address)
 
     private fun addScanResult(result: ScanResult) {
         val device = result.bleDevice

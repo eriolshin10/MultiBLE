@@ -1,5 +1,6 @@
 package com.rb.caapplication.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -10,7 +11,7 @@ import com.rb.caapplication.R
 import com.rb.caapplication.databinding.ItemConnectedDeviceBinding
 
 class ConnectedDeviceAdapter(
-    private val itemClicked: (String) -> Unit
+    private val itemClicked: (String, String?) -> Unit
 ) : ListAdapter<String, ConnectedDeviceAdapter.ConnectedDeviceViewHolder>(diffUtil) {
 
     class ConnectedDeviceViewHolder(
@@ -28,8 +29,14 @@ class ConnectedDeviceAdapter(
 
         return ConnectedDeviceViewHolder(binding).apply {
             binding.send.setOnClickListener {
+                Log.d("sband", "ConnectedDeviceAdapter 전송 클릭")
                 val position = adapterPosition
-                itemClicked(getItem(position))
+                itemClicked(getItem(position), binding.data.text.toString())
+            }
+            binding.disconnect.setOnClickListener {
+                Log.d("sband", "ConnectedDeviceAdapter 해제 클릭")
+                val position = adapterPosition
+                itemClicked(getItem(position), null)
             }
         }
 

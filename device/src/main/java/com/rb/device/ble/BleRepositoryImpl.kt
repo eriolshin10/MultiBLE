@@ -1,5 +1,6 @@
 package com.rb.device.ble
 
+import android.util.Log
 import com.polidea.rxandroidble2.RxBleClient
 import com.polidea.rxandroidble2.RxBleConnection
 import com.polidea.rxandroidble2.RxBleDevice
@@ -66,14 +67,20 @@ class BleRepositoryImpl(private val rxBleClient: RxBleClient) : BleRepository {
                 CoroutineScope(Dispatchers.IO).launch {
                     deviceConnectionEvent.emit(DeviceEvent.deviceConnectionEvent(device.macAddress, true))
                 }
+//                Log.d("sband", "BleRepositoryImpl rxBleConnectionMap.size: ${rxBleConnectionMap.size
+//                }\tconsStateDisposableMap.size: ${consStateDisposableMap.size}\tconnectSubscriptionMap.size: ${connectSubscriptionMap.size}" )
             }
             RxBleConnection.RxBleConnectionState.DISCONNECTED -> {
                 consStateDisposableMap[device.macAddress]?.dispose()
                 connectSubscriptionMap[device.macAddress]?.dispose()
-                rxBleConnectionMap.remove(device.macAddress)
                 CoroutineScope(Dispatchers.IO).launch {
                     deviceConnectionEvent.emit(DeviceEvent.deviceConnectionEvent(device.macAddress, false))
                 }
+                rxBleConnectionMap.remove(device.macAddress)
+                consStateDisposableMap.remove(device.macAddress)
+                connectSubscriptionMap.remove(device.macAddress)
+//                Log.d("sband", "BleRepositoryImpl rxBleConnectionMap.size: ${rxBleConnectionMap.size
+//                }\tconsStateDisposableMap.size: ${consStateDisposableMap.size}\tconnectSubscriptionMap.size: ${connectSubscriptionMap.size}" )
             }
             RxBleConnection.RxBleConnectionState.CONNECTING -> {}
             RxBleConnection.RxBleConnectionState.DISCONNECTING -> {}
@@ -85,5 +92,9 @@ class BleRepositoryImpl(private val rxBleClient: RxBleClient) : BleRepository {
             BleConst.UUID_SBAND_NOTIFY_DATA,
             sendByteData
         )
+    }
+
+    override fun disconnectBleDevice(address: String) {
+        connectSubscriptionMap[address]?.dispose()
     }
 }

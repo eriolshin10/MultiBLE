@@ -1,9 +1,11 @@
 package com.rb.caapplication.utils
 
+import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.rb.caapplication.MyApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,10 @@ class Utils {
                 i += 2
             }
             return data
+        }
+
+        fun showNotification(msg: String, form: String) {
+            Toast.makeText(MyApplication.applicationContext(), msg, Toast.LENGTH_SHORT).show()
         }
 
     }

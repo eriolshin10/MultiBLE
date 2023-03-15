@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import com.rb.caapplication.R
 import com.rb.caapplication.base.BaseActivity
 import com.rb.caapplication.databinding.ActivityBleBinding
+import com.rb.caapplication.utils.Utils
 import com.rb.caapplication.utils.Utils.Companion.repeatOnStarted
 import com.rb.caapplication.viewmodel.BleViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,6 +76,11 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
 
     override fun initObserver() {
         repeatOnStarted {
+            viewModel.eventFlow.collect{ event ->
+                handleEvent(event)
+            }
+        }
+        repeatOnStarted {
             viewModel.deviceConnectionEvent.collect {
                 Log.d("sband", "BleActivity DeviceConnectionEvent collect, address: ${it.address}\t${it.data}")
                 viewModel.updateConnectedDeviceMap(it.address, it.data)
@@ -112,6 +118,16 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
             Toast.makeText(this, "Permissions must be granted!", Toast.LENGTH_SHORT).show()
             finish()
         }
+    }
+
+    private fun handleEvent(event: BleViewModel.Event) = when (event) {
+        is BleViewModel.Event.BleScanException ->{
+
+        }
+        is BleViewModel.Event.ShowNotification->{
+            Utils.showNotification(event.msg,event.type)
+        }
+        else->{}
     }
 
 

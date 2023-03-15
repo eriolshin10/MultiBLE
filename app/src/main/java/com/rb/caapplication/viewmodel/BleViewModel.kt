@@ -71,9 +71,9 @@ class BleViewModel @Inject constructor(
                     addScanResult(scanResult)
                 }, {throwable ->
                     if (throwable is BleScanException) {
-                        Log.d("sband", "BleViewModel BleScanException throwable: ${throwable}")
+                        event(Event.BleScanException(throwable.reason))
                     } else {
-                        Log.d("sband", "BleViewModel BleScanException Unknown error")
+                        event(Event.ShowNotification("UNKNOWN ERROR", "error"))
                     }
                 })
 
@@ -132,6 +132,7 @@ class BleViewModel @Inject constructor(
     }
 
     sealed class Event {
+        data class BleScanException(val reason: Int) : Event()
         data class ShowNotification(val msg: String, val type: String) : Event()
     }
 

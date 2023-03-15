@@ -94,6 +94,15 @@ class BleRepositoryImpl(private val rxBleClient: RxBleClient) : BleRepository {
         )
     }
 
+    override fun bleNotification(address: String): Observable<ByteArray>? {
+        return rxBleConnectionMap[address]
+            ?.setupNotification(BleConst.UUID_SBAND_NOTIFY_DATA)
+            ?.doOnNext {  notificationObservable ->
+
+            }
+            ?.flatMap { notificationObservable -> notificationObservable }
+    }
+
     override fun disconnectBleDevice(address: String) {
         connectSubscriptionMap[address]?.dispose()
     }

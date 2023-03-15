@@ -15,6 +15,7 @@ import com.rb.domain.ble.DeviceEvent
 import com.rb.domain.usecase.ConnectBleDeviceUseCase
 import com.rb.domain.usecase.DeviceConnectionEventUseCase
 import com.rb.domain.usecase.DisconnectBleDeviceUseCase
+import com.rb.domain.usecase.NotifyUseCase
 import com.rb.domain.usecase.ScanBleDevicesUseCase
 import com.rb.domain.usecase.TestScanBleDevicesUseCase
 import com.rb.domain.usecase.WriteByteDataUseCase
@@ -38,6 +39,7 @@ class BleViewModel @Inject constructor(
     private val scanBleDevicesUseCase: ScanBleDevicesUseCase,
     private val connectBleDeviceUseCase: ConnectBleDeviceUseCase,
     private val writeByteDataUseCase: WriteByteDataUseCase,
+    private val notifyUseCase: NotifyUseCase,
     private val disconnectBleDeviceUseCase: DisconnectBleDeviceUseCase,
     private val testScanBleDevicesUseCase: TestScanBleDevicesUseCase,
     deviceConnectionEventUseCase: DeviceConnectionEventUseCase
@@ -47,6 +49,7 @@ class BleViewModel @Inject constructor(
         deviceConnectionEventUseCase.execute().asSharedFlow()
 
     private var scanSubscription: Disposable? = null
+    private var notificationSubscription: Disposable? = null
 
     var scanResults = ObservableArrayMap<String, ScanResult>()
     var connectedDeviceList = ObservableArrayList<String>()
@@ -100,6 +103,7 @@ class BleViewModel @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 delay(500)
                 writeData(address, data)
+                notifyToggle(address)
             }
 
         }
@@ -125,6 +129,28 @@ class BleViewModel @Inject constructor(
 
     }
 
+    private fun notifyToggle(address: String){
+        notificationSubscription = notifyUseCase.execute(address)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({ bytes ->
+                val hexString: String = bytes.joinToString(separator = " ") {
+                    String.format("%02X", it)
+                }
+                Log.d("sband", hexString)
+                event(Event.ReadLogUpdate(hexString))
+            }, {
+                event(Event.ShowNotification("${it.message}", "error"))
+                notificationSubscription?.dispose()
+            })
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scanSubscription?.dispose()
+        notificationSubscription?.dispose()
+    }
+
     private fun event(event: Event) {
         viewModelScope.launch {
             _eventFlow.emit(event)
@@ -134,6 +160,7 @@ class BleViewModel @Inject constructor(
     sealed class Event {
         data class BleScanException(val reason: Int) : Event()
         data class ShowNotification(val msg: String, val type: String) : Event()
+        data class ReadLogUpdate(val hexString: String) : Event()
     }
 
 }

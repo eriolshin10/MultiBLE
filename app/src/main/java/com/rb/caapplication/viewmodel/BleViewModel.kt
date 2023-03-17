@@ -49,7 +49,7 @@ class BleViewModel @Inject constructor(
         deviceConnectionEventUseCase.execute().asSharedFlow()
 
     private var scanSubscription: Disposable? = null
-    private var notificationSubscription: Disposable? = null
+    private var notificationSubscriptionMap = hashMapOf<String, Disposable?>()
 
     var scanResults = ObservableArrayMap<String, ScanResult>()
     var connectedDeviceList = ObservableArrayList<String>()
@@ -71,7 +71,7 @@ class BleViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ scanResult ->
-                    addScanResult(scanResult)
+                    if (scanResult.bleDevice.name?.contains("Zling") == true) addScanResult(scanResult)
                 }, {throwable ->
                     if (throwable is BleScanException) {
                         event(Event.BleScanException(throwable.reason))
@@ -109,6 +109,7 @@ class BleViewModel @Inject constructor(
         }
         else {
             connectedDeviceList.remove(address)
+            disposeNotify(address)
         }
     }
 
@@ -130,25 +131,32 @@ class BleViewModel @Inject constructor(
     }
 
     private fun notifyToggle(address: String){
-        notificationSubscription = notifyUseCase.execute(address)
+        notificationSubscriptionMap[address] = notifyUseCase.execute(address)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe({ bytes ->
                 val hexString: String = bytes.joinToString(separator = " ") {
                     String.format("%02X", it)
                 }
-                Log.d("sband", hexString)
-                event(Event.ReadLogUpdate(hexString))
+                event(Event.NotifyData(address, hexString))
             }, {
                 event(Event.ShowNotification("${it.message}", "error"))
-                notificationSubscription?.dispose()
+                notificationSubscriptionMap[address]?.dispose()
             })
+    }
+
+    private fun disposeNotify(address: String) {
+        notificationSubscriptionMap[address]?.dispose()
+        notificationSubscriptionMap.remove(address)
     }
 
     override fun onCleared() {
         super.onCleared()
         scanSubscription?.dispose()
-        notificationSubscription?.dispose()
+        notificationSubscriptionMap.map {
+            it.value?.dispose()
+        }
+        notificationSubscriptionMap.clear()
     }
 
     private fun event(event: Event) {
@@ -160,7 +168,7 @@ class BleViewModel @Inject constructor(
     sealed class Event {
         data class BleScanException(val reason: Int) : Event()
         data class ShowNotification(val msg: String, val type: String) : Event()
-        data class ReadLogUpdate(val hexString: String) : Event()
+        data class NotifyData(val address: String, val data: String) : Event()
     }
 
 }

@@ -27,32 +27,13 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/start_scan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{()-> viewmodel.startScan()}"
-                android:text="스캔 시작"
-                android:textSize="40sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{()-> viewmodel.stopScan()}"
-                android:text="스캔 중지"
-                android:textSize="40sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/start_scan" />
-
-            <TextView
                 android:id="@+id/title_connected_devices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="연결된 디바이스 목록"
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/start_scan" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_connected_devices"

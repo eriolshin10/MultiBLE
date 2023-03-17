@@ -27,8 +27,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -57,9 +59,14 @@ class BleViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<Event>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private val _isBleScaning = MutableStateFlow(false)
+    val isBleScaning = _isBleScaning.asStateFlow()
+
     fun testScan() = testScanBleDevicesUseCase.execute()
 
     fun startScan() {
+        if (_isBleScaning.value) return
+
         Log.d("sband", "BleViewModel startScan()")
         val settings: ScanSettings = ScanSettings.Builder().build()
         val scanFilter: ScanFilter = ScanFilter.Builder().build()
@@ -72,18 +79,21 @@ class BleViewModel @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ scanResult ->
                     if (scanResult.bleDevice.name?.contains("Zling") == true) addScanResult(scanResult)
+                    updateBleState(true)
                 }, {throwable ->
                     if (throwable is BleScanException) {
                         event(Event.BleScanException(throwable.reason))
                     } else {
                         event(Event.ShowNotification("UNKNOWN ERROR", "error"))
                     }
+                    updateBleState(false)
                 })
 
         Timer("scan",false).schedule(5000L) { stopScan() }
     }
 
     fun stopScan() {
+        updateBleState(false)
         scanSubscription?.dispose()
     }
 
@@ -157,6 +167,12 @@ class BleViewModel @Inject constructor(
             it.value?.dispose()
         }
         notificationSubscriptionMap.clear()
+    }
+
+    private fun updateBleState(isScaning: Boolean) {
+        viewModelScope.launch {
+            _isBleScaning.emit(isScaning)
+        }
     }
 
     private fun event(event: Event) {

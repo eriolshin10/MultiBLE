@@ -6,9 +6,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.asLiveData
 import com.rb.caapplication.R
 import com.rb.caapplication.base.BaseActivity
 import com.rb.caapplication.databinding.ActivityBleBinding
@@ -21,6 +24,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.activity_ble) {
 
     override val viewModel by viewModels<BleViewModel>()
+
+    private var scanIcon: MenuItem? = null
 
     private val scanAdapter: ScanAdapter by lazy {
         ScanAdapter { scanResult ->
@@ -86,6 +91,12 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
                 viewModel.updateConnectedDeviceMap(it.address, it.data)
             }
         }
+
+        repeatOnStarted {
+            viewModel.isBleScaning.collect {
+                updateMenu(it)
+            }
+        }
     }
 
     override fun onResume() {
@@ -118,6 +129,29 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
             Toast.makeText(this, "Permissions must be granted!", Toast.LENGTH_SHORT).show()
             finish()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_ble, menu)
+        scanIcon = menu.findItem(R.id.menu_scan)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_scan -> {
+                viewModel.startScan()
+                scanIcon?.setIcon(R.drawable.icon_refresh)
+            }
+            else -> {}
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun updateMenu(isScan: Boolean) {
+        val icon = if (isScan) R.drawable.icon_refresh
+        else R.drawable.icon_search
+        scanIcon?.setIcon(icon)
     }
 
     private fun handleEvent(event: BleViewModel.Event) = when (event) {

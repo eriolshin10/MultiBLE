@@ -121,13 +121,15 @@ class BleActivity : BaseActivity<ActivityBleBinding, BleViewModel>(R.layout.acti
     }
 
     private fun handleEvent(event: BleViewModel.Event) = when (event) {
-        is BleViewModel.Event.BleScanException ->{
+        is BleViewModel.Event.BleScanException -> {
 
         }
-        is BleViewModel.Event.ShowNotification->{
+        is BleViewModel.Event.ShowNotification -> {
             Utils.showNotification(event.msg,event.type)
         }
-        else->{}
+        is BleViewModel.Event.NotifyData -> {
+            Log.d("sband", "BleActivity NotifyData address: ${event.address}\tdata: ${event.data}")
+        }
     }
 
 

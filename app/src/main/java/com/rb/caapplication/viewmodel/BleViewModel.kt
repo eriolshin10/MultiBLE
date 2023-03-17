@@ -121,7 +121,7 @@ class BleViewModel @Inject constructor(
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe({ bytes ->
                 val hexString: String = bytes.joinToString(" ") {
-                    String.format("02X", it)
+                    String.format("%02X", it)
                 }
                 event(Event.ShowNotification("write `$hexString`.", "success"))
             }, {
